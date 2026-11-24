@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf" content="{{ csrf_token }}">
+<title>{{ title }} - {% block ptitle %}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="{{ page }}">
+<div class="shell">
+  <aside class="side">
+    <div class="brand">{{ title }}<small>Seven-layer network monitoring</small></div>
+    <nav class="nav">
+      {% for key, label, href in pages %}
+      <a href="{{ href }}" class="{{ 'active' if page == key else '' }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="grow"></div>
+    <div class="pill" id="modePill"><span class="dot" id="modeDot"></span><span id="modeText">connecting</span></div>
+    <div class="userbox">
+      <span>Signed in as {{ user }}</span>
+      <a href="/account">Change password</a>
+      <form method="post" action="/logout"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="btn ghost sm" type="submit">Sign out</button></form>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      {% if must_change %}<div class="banner">You are using the default password. <a href="/account">Change it now</a>.</div>{% endif %}
+      <div id="errBanner"></div>
+      {% block body %}{% endblock %}
+    </div>
+    <div class="foot">{{ footer }}</div>
+  </main>
+</div>
+<aside class="drawer" id="drawer" hidden aria-label="Frame decoder">
+  <div class="dhead"><div><div class="dtitle" id="dTitle"></div><div class="sub" id="dSub" style="margin:0"></div></div><button class="btn ghost sm" id="dClose">Close</button></div>
+  <div class="tabs" id="dTabs"><button data-t="decode" class="on">Decode</button><button data-t="decap">Decapsulation</button><button data-t="extract">Extract</button></div>
+  <div class="dbody" id="dBody"></div>
+</aside>
+<script src="{{ url_for('static', filename='chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ url_for('static', filename='pages.js') }}"></script>
+</body>
+</html>

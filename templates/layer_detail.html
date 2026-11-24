@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block ptitle %}Layer {{ n }}{% endblock %}
+{% block body %}
+<script>window.LAYER_N = {{ n }};</script>
+<p class="sub" style="margin-bottom:6px"><a href="/layers">&larr; All layers</a></p>
+<h1>Layer {{ n }}: {{ lname }}</h1>
+<p class="sub" id="lDesc"></p>
+<div class="grid g4" id="lKpis" style="margin-bottom:14px"></div>
+<div id="lBody"></div>
+{% endblock %}

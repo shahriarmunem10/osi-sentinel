@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block ptitle %}Rules{% endblock %}
+{% block body %}
+<h1>Detection rules</h1>
+<p class="sub">Turn rules on or off and change thresholds without editing any file. Changes apply immediately and are saved.</p>
+<div class="grid g2">
+  <div class="card"><h2>Rules</h2><div class="scroll" style="max-height:none"><table><thead><tr><th>On</th><th>Layer</th><th>Rule</th><th>Severity</th></tr></thead><tbody id="ruRows"></tbody></table></div></div>
+  <div class="card"><h2>Thresholds</h2><div id="ruLimits"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="ruSave">Save changes</button><button class="btn ghost" id="ruReset">Restore defaults</button></div><div id="ruMsg"></div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block ptitle %}Conversations{% endblock %}
+{% block body %}
+<h1>Conversations</h1>
+<p class="sub">Who talks to whom, how much data they exchange, and the full TCP session. Click a conversation to follow the stream.</p>
+<div class="card" style="margin-bottom:14px">
+  <div class="toolbar">
+    <div style="flex:2"><label for="fq">Search</label><input id="fq" placeholder="IP address, port, service"></div>
+    <div><label for="fstate">TCP state</label><select id="fstate"><option value="">Any</option><option>ESTABLISHED</option><option>SYN_SENT</option><option>SYN_RECEIVED</option><option>CLOSING</option><option>CLOSED</option><option>RESET</option></select></div>
+  </div>
+  <div class="scroll"><table><thead><tr><th>Protocol</th><th>Endpoint A</th><th>Endpoint B</th><th>Service</th><th>State</th><th>Packets</th><th>Bytes</th><th>A to B</th><th>B to A</th><th>Duration</th></tr></thead><tbody id="flRows"></tbody></table></div>
+</div>
+<div class="card" id="flDetail" hidden></div>
+{% endblock %}

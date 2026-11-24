@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block ptitle %}Crypto Lab{% endblock %}
+{% block body %}
+<h1>Crypto lab</h1>
+<p class="sub">Layer 6 (Presentation) in practice: hashing, symmetric and asymmetric encryption, and digital signatures.</p>
+<div class="cols">
+  <div class="card">
+    <h2>SHA-256 hashing</h2>
+    <label for="hText">Message</label><textarea id="hText">OSI Sentinel</textarea>
+    <label for="hCmp">Second message to compare (optional)</label><textarea id="hCmp">OSI sentinel</textarea>
+    <p><button class="btn" id="hGo">Compute hash</button></p>
+    <div class="result" id="hOut" hidden></div>
+  </div>
+  <div class="card">
+    <h2>AES-256-GCM encryption</h2>
+    <label for="aText">Plaintext</label><textarea id="aText">Confidential: exam results are published on Friday.</textarea>
+    <label for="aPass">Password</label><input id="aPass" value="demo-password">
+    <p class="row" style="margin-top:10px"><button class="btn" id="aEnc">Encrypt</button><button class="btn ghost" id="aDec">Decrypt package below</button></p>
+    <label for="aPkg">Encrypted package (salt.nonce.ciphertext)</label><textarea id="aPkg"></textarea>
+    <p class="sub" style="margin:6px 0 0">Change one character of the package and decrypt again to see the integrity check fail.</p>
+    <div class="result" id="aOut" hidden></div>
+  </div>
+  <div class="card">
+    <h2>RSA-2048 key pair and encryption</h2>
+    <p><button class="btn" id="rGenKey">Generate key pair</button></p>
+    <label for="rPub">Public key</label><textarea id="rPub" rows="4"></textarea>
+    <label for="rPriv">Private key</label><textarea id="rPriv" rows="4"></textarea>
+    <label for="rText">Message (up to 190 bytes)</label><textarea id="rText">Meet at the lab at 10.</textarea>
+    <p class="row" style="margin-top:10px"><button class="btn" id="rEnc">Encrypt with public key</button><button class="btn ghost" id="rDec">Decrypt with private key</button></p>
+    <label for="rCt">Ciphertext</label><textarea id="rCt"></textarea>
+    <div class="result" id="rOut" hidden></div>
+  </div>
+  <div class="card">
+    <h2>Digital signature</h2>
+    <p class="sub">Uses the key pair from the RSA panel.</p>
+    <label for="sText">Message</label><textarea id="sText">Transfer approved: 5000 BDT</textarea>
+    <p class="row" style="margin-top:10px"><button class="btn" id="sSign">Sign with private key</button><button class="btn ghost" id="sVer">Verify with public key</button></p>
+    <label for="sSig">Signature</label><textarea id="sSig"></textarea>
+    <p class="sub" style="margin:6px 0 0">Edit the message after signing and verify again to watch the signature break.</p>
+    <div class="result" id="sOut" hidden></div>
+  </div>
+</div>
+{% endblock %}

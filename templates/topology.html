@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block ptitle %}Topology{% endblock %}
+{% block body %}
+<h1>Network topology</h1>
+<p class="sub">Router in the centre, devices around it. Line thickness shows traffic volume. Click a device for details.</p>
+<div class="card" style="margin-bottom:14px"><div class="row" style="align-items:center"><label style="display:flex;gap:8px;align-items:center;margin:0;flex:0 0 auto"><input type="checkbox" id="topoOnline" style="width:auto"> Show online devices only</label><button class="btn danger" id="topoReset" style="flex:0 0 auto">Reset and rescan</button><span class="sub" style="flex:2">Reset forgets every stored device and builds the map again from a fresh scan.</span></div></div>
+<div class="cols" style="grid-template-columns:2fr 1fr">
+  <div class="card"><svg id="topo" viewBox="0 0 760 560" style="width:100%;height:auto" role="img" aria-label="Network topology graph"></svg></div>
+  <div class="card" id="topoInfo"><h2>Device details</h2><p class="sub">Select a device in the graph.</p></div>
+</div>
+{% endblock %}

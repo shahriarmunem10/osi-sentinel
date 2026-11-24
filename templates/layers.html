@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block ptitle %}Layer Monitor{% endblock %}
+{% block body %}
+<h1>Layer monitor</h1>
+<p class="sub">One module per OSI layer, each with its own counters and detection rules.</p>
+<div class="grid g3" id="layerCards"></div>
+<div class="card" style="margin-top:14px">
+  <h2>Layer 1 - network interfaces</h2>
+  <div class="scroll"><table><thead><tr><th>Interface</th><th>State</th><th>Address</th><th>Speed</th><th>Receive</th><th>Send</th><th>Errors</th><th>Drops</th></tr></thead><tbody id="ifaces"></tbody></table></div>
+</div>
+{% endblock %}

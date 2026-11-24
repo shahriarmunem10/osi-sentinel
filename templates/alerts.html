@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block ptitle %}Alerts{% endblock %}
+{% block body %}
+<h1>Alerts</h1>
+<p class="sub">Every detection with its OSI layer, severity and evidence. Click a row for the full detail.</p>
+<div class="card">
+  <div class="toolbar">
+    <div><label for="fLayer">Layer</label><select id="fLayer"><option value="">All layers</option>{% for i in range(1,8) %}<option value="{{ i }}">L{{ i }} {{ layer_names[i] }}</option>{% endfor %}</select></div>
+    <div><label for="fSev">Severity</label><select id="fSev"><option value="">All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
+    <div style="flex:2"><label for="fQ">Search</label><input id="fQ" placeholder="threat, IP address, detail"></div>
+    <button class="btn danger sm" id="clearAlerts">Clear alerts</button>
+  </div>
+  <div class="scroll" style="max-height:640px"><table><thead><tr><th>Time</th><th>Layer</th><th>Threat</th><th>Severity</th><th>Source</th><th>Target</th></tr></thead><tbody id="alertRows"></tbody></table></div>
+</div>
+{% endblock %}

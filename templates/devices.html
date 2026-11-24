@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block ptitle %}Devices{% endblock %}
+{% block body %}
+<h1>Devices on your network</h1>
+<p class="sub">Every device found by scanning the local network and by listening to ARP, DHCP, mDNS, NetBIOS and SSDP traffic.</p>
+<div id="dvNote"></div>
+<div class="grid g4" id="dvKpis" style="margin-bottom:14px"></div>
+<div class="card" style="margin-bottom:14px">
+  <div class="row" style="align-items:center">
+    <div><label for="dvNet">Network to scan</label><select id="dvNet"></select></div>
+    <button class="btn" id="dvScan">Scan now</button>
+    <button class="btn danger" id="dvReset">Reset and rescan</button>
+    <label style="display:flex;gap:8px;align-items:center;margin:0;flex:0 0 auto"><input type="checkbox" id="dvOnline" style="width:auto"> Show online devices only</label>
+    <label style="display:flex;gap:8px;align-items:center;margin:0;flex:0 0 auto"><input type="checkbox" id="dvAuto" style="width:auto"> Auto scan every 60 s</label>
+    <div id="dvState" class="sub" style="flex:2"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="scroll" style="max-height:none"><table><thead><tr><th>Status</th><th>Name</th><th>IP address</th><th>MAC address</th><th>Vendor</th><th>Type (guess)</th><th>Traffic now</th><th>Total</th><th></th></tr></thead><tbody id="dvRows"></tbody></table></div>
+</div>
+{% endblock %}

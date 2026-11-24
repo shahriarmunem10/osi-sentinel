@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OSI Sentinel Security Report</title>
+<style>
+:root{--ink:#0e1621;--panel:#152130;--panel2:#1b2a3c;--line:#27384d;--text:#dde6f0;--muted:#8397ad;--accent:#46c2cb;--crit:#e5484d;--high:#ef8a3c;--med:#e6b422;--low:#6fa8dc;--mono:"Cascadia Mono",Consolas,Menlo,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--text);font:14px/1.5 "Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 22px}
+h1{margin:0;font-size:26px}h2{font-size:15px;margin:0 0 12px}.sub{color:var(--muted)}
+.hdr{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.kpi .v{font-size:28px;font-weight:650}.kpi .l{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+th{color:var(--muted);cursor:pointer;user-select:none;background:var(--panel)}.scroll th{position:sticky;top:0}.chartbox{position:relative;height:240px}th.sorted::after{content:" \25BE"}th.sorted.asc::after{content:" \25B4"}
+tbody tr:hover{background:var(--panel2)}.mono{font-family:var(--mono);font-size:12.5px}
+.scroll{max-height:560px;overflow:auto;border-radius:8px}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;color:#10161e}.b-Critical{background:var(--crit);color:#fff}.b-High{background:var(--high)}.b-Medium{background:var(--med)}.b-Low{background:var(--low)}
+.lay{font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:5px;background:var(--panel2);border:1px solid var(--line)}
+input,select{background:#0e1823;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:13px inherit}
+.btn{background:var(--accent);color:#06282b;border:0;border-radius:7px;padding:8px 14px;font:600 13px inherit;cursor:pointer}.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.chip{border:1px solid var(--line);background:transparent;color:var(--text);padding:5px 11px;border-radius:999px;cursor:pointer;font:13px inherit}.chip.on{background:var(--accent);color:#06282b;border-color:var(--accent)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.detail td{background:#101b29;font-family:var(--mono);font-size:12.5px}
+.foot{color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);margin-top:26px;padding-top:12px}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+@media print{body{background:#fff;color:#111}.card{border-color:#ccc;background:#fff}.bar button,.bar input,.bar select,.noprint{display:none}.scroll{max-height:none}th{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div><h1 id="title"></h1><div class="sub" id="subtitle"></div></div>
+    <div class="sub" style="text-align:right"><div id="range"></div><div id="gen"></div><button class="btn ghost noprint" style="margin-top:8px" onclick="window.print()">Print or save as PDF</button></div>
+  </div>
+  <div class="grid g4" id="kpis" style="margin-bottom:14px"></div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="card"><h2>Alerts by OSI layer</h2><div class="chartbox"><canvas id="cLayer"></canvas></div></div>
+    <div class="card"><h2>Alerts by severity</h2><div class="chartbox"><canvas id="cSev"></canvas></div></div>
+    <div class="card"><h2>Alerts over time</h2><div class="chartbox"><canvas id="cTime"></canvas></div></div>
+    <div class="card"><h2>Packet rate</h2><div class="chartbox"><canvas id="cRate"></canvas></div></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="card"><h2>Layer summary</h2><table><thead><tr><th>Layer</th><th>Packets</th><th>Alerts</th><th>Worst severity</th></tr></thead><tbody id="layerTable"></tbody></table></div>
+    <div class="card"><h2>Most frequent threats</h2><table><thead><tr><th>Threat</th><th>Layer</th><th>Count</th></tr></thead><tbody id="threatTable"></tbody></table></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="card"><h2>Top talkers</h2><table><thead><tr><th>Address</th><th>Packets</th></tr></thead><tbody id="talkTable"></tbody></table></div>
+    <div class="card"><h2>Protocols</h2><table><thead><tr><th>Protocol</th><th>Packets</th></tr></thead><tbody id="protoTable"></tbody></table></div>
+  </div>
+  <div class="card">
+    <h2>Alert log</h2>
+    <div class="bar" id="layerChips"></div>
+    <div class="bar" id="sevChips"></div>
+    <div class="bar"><input id="q" placeholder="Search threat, address, detail" style="flex:1;min-width:200px"><button class="btn" id="csv">Export CSV</button><span class="sub" id="count"></span></div>
+    <div class="scroll"><table id="alertTable"><thead><tr><th data-k="ts">Time</th><th data-k="layer">Layer</th><th data-k="threat">Threat</th><th data-k="severity">Severity</th><th data-k="src">Source</th><th data-k="dst">Target</th></tr></thead><tbody id="rows"></tbody></table></div>
+  </div>
+  <div class="foot" id="footer"></div>
+</div>
+<script>/*__CHARTJS__*/</script>
+<script>
+(function(){
+var D=/*__DATA__*/null;
+var SEV=["Critical","High","Medium","Low"],RANK={Critical:4,High:3,Medium:2,Low:1};
+var COL={Critical:"#e5484d",High:"#ef8a3c",Medium:"#e6b422",Low:"#6fa8dc"};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function t(ts){var d=new Date(ts*1000);return d.toLocaleString([],{hour12:false})}
+function num(n){return Number(n||0).toLocaleString()}
+function bytes(b){var u=["B","KB","MB","GB"],i=0;b=Number(b||0);while(b>=1024&&i<3){b/=1024;i++}return b.toFixed(i?1:0)+" "+u[i]}
+function badge(s){return '<span class="badge b-'+s+'">'+s+'</span>'}
+$("title").textContent=D.title+" Security Report";$("subtitle").textContent=D.subtitle;
+$("range").textContent="Range: "+D.range;$("gen").textContent="Generated "+D.generated+" | source mode: "+D.mode;$("footer").textContent=D.footer;
+var A=D.alerts,sevCount={Critical:0,High:0,Medium:0,Low:0},layerCount={},layerWorst={},threats={};
+A.forEach(function(a){sevCount[a.severity]=(sevCount[a.severity]||0)+1;layerCount[a.layer]=(layerCount[a.layer]||0)+1;
+ if(!layerWorst[a.layer]||RANK[a.severity]>RANK[layerWorst[a.layer]])layerWorst[a.layer]=a.severity;
+ var k=a.threat+"|"+a.layer;threats[k]=(threats[k]||0)+1});
+var top=A.length?A.reduce(function(m,a){return RANK[a.severity]>RANK[m]?a.severity:m},"Low"):"None";
+[["Packets analysed",num(D.packets.count)],["Traffic volume",bytes(D.packets.bytes)],["Security alerts",num(A.length)],["Highest severity",top]].forEach(function(k){
+ var d=document.createElement("div");d.className="card kpi";d.innerHTML='<div class="v">'+esc(k[1])+'</div><div class="l">'+k[0]+'</div>';$("kpis").appendChild(d)});
+Chart.defaults.color="#8397ad";Chart.defaults.borderColor="#27384d";
+var labels=[1,2,3,4,5,6,7].map(function(i){return"L"+i+" "+D.layer_names[i]});
+new Chart($("cLayer"),{type:"bar",data:{labels:labels,datasets:[{data:[1,2,3,4,5,6,7].map(function(i){return layerCount[i]||0}),backgroundColor:"#46c2cb"}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+new Chart($("cSev"),{type:"doughnut",data:{labels:SEV,datasets:[{data:SEV.map(function(s){return sevCount[s]||0}),backgroundColor:SEV.map(function(s){return COL[s]}),borderWidth:0}]},options:{maintainAspectRatio:false,cutout:"60%",plugins:{legend:{position:"right"}}}});
+var buckets={};A.forEach(function(a){var k=Math.floor(a.ts/60)*60;buckets[k]=(buckets[k]||0)+1});
+var bk=Object.keys(buckets).sort(function(a,b){return a-b});
+new Chart($("cTime"),{type:"bar",data:{labels:bk.map(function(k){return new Date(k*1000).toLocaleTimeString([],{hour12:false,hour:"2-digit",minute:"2-digit"})}),datasets:[{label:"Alerts per minute",data:bk.map(function(k){return buckets[k]}),backgroundColor:"#ef8a3c"}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{ticks:{maxTicksLimit:8}}}}});
+new Chart($("cRate"),{type:"line",data:{labels:D.stats.map(function(s){return new Date(s.ts*1000).toLocaleTimeString([],{hour12:false})}),datasets:[{data:D.stats.map(function(s){return Math.round(s.pps*10)/10}),borderColor:"#46c2cb",backgroundColor:"rgba(70,194,203,.15)",fill:true,tension:.3,pointRadius:0}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true},x:{ticks:{maxTicksLimit:8}}}}});
+$("layerTable").innerHTML=[1,2,3,4,5,6,7].map(function(i){return"<tr><td>L"+i+" "+D.layer_names[i]+"</td><td>"+(i===1?"interface counters":num(D.layer_packets[i]))+"</td><td>"+(layerCount[i]||0)+"</td><td>"+(layerWorst[i]?badge(layerWorst[i]):"-")+"</td></tr>"}).join("");
+$("threatTable").innerHTML=Object.keys(threats).sort(function(a,b){return threats[b]-threats[a]}).slice(0,10).map(function(k){var p=k.split("|");return"<tr><td>"+esc(p[0])+'</td><td><span class="lay">L'+p[1]+"</span></td><td>"+threats[k]+"</td></tr>"}).join("")||'<tr><td colspan="3" class="sub">No threats recorded.</td></tr>';
+$("talkTable").innerHTML=D.talkers.map(function(r){return'<tr><td class="mono">'+esc(r.src)+"</td><td>"+num(r.c)+"</td></tr>"}).join("")||'<tr><td colspan="2" class="sub">No data.</td></tr>';
+$("protoTable").innerHTML=D.protocols.map(function(r){return"<tr><td>"+esc(r.proto)+"</td><td>"+num(r.c)+"</td></tr>"}).join("")||'<tr><td colspan="2" class="sub">No data.</td></tr>';
+var fl=null,fs=null,sortK="ts",sortAsc=false;
+function chips(id,items,cb,label){var el=$(id);el.innerHTML='<span class="sub">'+label+'</span>';
+ var all=document.createElement("button");all.className="chip on";all.textContent="All";el.appendChild(all);var btns=[all];
+ all.onclick=function(){btns.forEach(function(b){b.classList.remove("on")});all.classList.add("on");cb(null);draw()};
+ items.forEach(function(it){var b=document.createElement("button");b.className="chip";b.textContent=it[1];b.onclick=function(){btns.forEach(function(x){x.classList.remove("on")});b.classList.add("on");cb(it[0]);draw()};el.appendChild(b);btns.push(b)})}
+chips("layerChips",[1,2,3,4,5,6,7].map(function(i){return[i,"L"+i]}),function(v){fl=v},"Layer");
+chips("sevChips",SEV.map(function(s){return[s,s]}),function(v){fs=v},"Severity");
+function filtered(){var q=$("q").value.toLowerCase();
+ var r=A.filter(function(a){return(fl===null||a.layer===fl)&&(fs===null||a.severity===fs)&&(!q||(a.threat+" "+a.src+" "+a.dst+" "+a.detail).toLowerCase().indexOf(q)>=0)});
+ r.sort(function(x,y){var a=x[sortK],b=y[sortK];if(sortK==="severity"){a=RANK[a];b=RANK[b]}var c=a<b?-1:a>b?1:0;return sortAsc?c:-c});return r}
+function draw(){var r=filtered();$("count").textContent=r.length+" of "+A.length+" alerts";
+ $("rows").innerHTML=r.map(function(a,i){return'<tr data-i="'+i+'" style="cursor:pointer"><td class="mono">'+t(a.ts)+'</td><td><span class="lay">L'+a.layer+"</span></td><td>"+esc(a.threat)+"</td><td>"+badge(a.severity)+'</td><td class="mono">'+esc(a.src)+'</td><td class="mono">'+esc(a.dst)+"</td></tr>"}).join("")||'<tr><td colspan="6" class="sub">No alerts match.</td></tr>';
+ $("rows")._r=r}
+$("rows").addEventListener("click",function(e){var tr=e.target.closest("tr[data-i]");if(!tr)return;var n=tr.nextElementSibling;if(n&&n.classList.contains("detail")){n.remove();return}
+ var a=$("rows")._r[tr.dataset.i];var d=document.createElement("tr");d.className="detail";d.innerHTML='<td colspan="6">Layer '+a.layer+" "+D.layer_names[a.layer]+" | "+esc(a.detail)+"</td>";tr.parentNode.insertBefore(d,tr.nextSibling)});
+document.querySelectorAll("#alertTable th").forEach(function(th){th.onclick=function(){var k=th.dataset.k;if(sortK===k)sortAsc=!sortAsc;else{sortK=k;sortAsc=true}
+ document.querySelectorAll("#alertTable th").forEach(function(x){x.classList.remove("sorted","asc")});th.classList.add("sorted");if(sortAsc)th.classList.add("asc");draw()}});
+$("q").oninput=draw;
+$("csv").onclick=function(){var r=filtered();var lines=[["time","layer","threat","severity","source","target","detail"].join(",")];
+ r.forEach(function(a){lines.push([new Date(a.ts*1000).toISOString(),a.layer,a.threat,a.severity,a.src,a.dst,a.detail].map(function(v){return'"'+String(v==null?"":v).replace(/"/g,'""')+'"'}).join(","))});
+ var b=new Blob([lines.join("\n")],{type:"text/csv"});var l=document.createElement("a");l.href=URL.createObjectURL(b);l.download="sentinel_alerts.csv";l.click()};
+draw();
+})();
+</script>
+</body>
+</html>

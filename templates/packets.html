@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block ptitle %}Packet Inspector{% endblock %}
+{% block body %}
+<h1>Packet inspector</h1>
+<p class="sub">The latest 200 frames. Click any frame to break it apart layer by layer. Frames are kept in memory only.</p>
+<div class="card">
+  <div class="toolbar">
+    <div><label for="pLayer">Layer</label><select id="pLayer"><option value="">All layers</option>{% for i in range(2,8) %}<option value="{{ i }}">L{{ i }} {{ layer_names[i] }}</option>{% endfor %}</select></div>
+    <div style="flex:3"><label for="pQ">Filter (examples below)</label><input id="pQ" placeholder="ip == 192.168.1.5 and tcp.port == 80" spellcheck="false"></div>
+    <button class="btn ghost sm" id="pPause">Pause</button><a class="btn ghost sm" id="pPcap" href="/api/pcap">Export PCAP</a>
+  </div>
+  <div class="chips" id="pChips" style="margin-bottom:10px"></div><div id="pErr"></div>
+  <div class="scroll" style="max-height:640px"><table><thead><tr><th>Time</th><th>Layer</th><th>Source</th><th>Destination</th><th>Protocol</th><th>Length</th><th>Info</th></tr></thead><tbody id="pktRows"></tbody></table></div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block ptitle %}Overview{% endblock %}
+{% block body %}
+<h1>Overview</h1>
+<p class="sub">Live traffic and threat picture across the seven OSI layers.</p>
+<div class="grid g4" style="margin-bottom:14px">
+  <div class="card kpi"><div class="v" id="kPackets">0</div><div class="l">Packets captured</div></div>
+  <div class="card kpi"><div class="v" id="kPps">0</div><div class="l">Packets per second</div></div>
+  <div class="card kpi"><div class="v" id="kAlerts">0</div><div class="l">Security alerts</div></div>
+  <div class="card kpi"><div class="v" id="kEnc">0%</div><div class="l">Encrypted share of payload traffic</div></div>
+</div>
+<div class="cols" style="margin-bottom:14px">
+  <div class="card"><h2>OSI layer stack</h2><div class="stack" id="stack"></div></div>
+  <div class="card"><h2>Packet rate</h2><div class="chartbox"><canvas id="rateChart"></canvas></div></div>
+</div>
+<div class="grid g3" style="margin-bottom:14px">
+  <div class="card"><h2>Alerts by severity</h2><div class="chartbox" style="height:200px"><canvas id="sevChart"></canvas></div></div>
+  <div class="card"><h2>Protocols</h2><div id="protos"></div></div>
+  <div class="card"><h2>Top talkers</h2><div id="talkers"></div></div>
+</div>
+<div class="card" style="margin-bottom:14px">
+  <h2>Latest alerts</h2>
+  <div class="scroll" style="max-height:300px"><table><thead><tr><th>Time</th><th>Layer</th><th>Threat</th><th>Severity</th><th>Source</th></tr></thead><tbody id="recent"></tbody></table></div>
+</div>
+<div class="card">
+  <h2>Attack scenario lab</h2>
+  <p class="sub" style="margin-bottom:10px">Injects synthetic attack traffic into the detection engine so every rule can be demonstrated on demand. Entries are tagged [SIM] in the Packet Inspector.</p>
+  <div class="chips" id="scenarios"></div>
+  <div class="row" style="margin-top:14px;align-items:center">
+    <button class="btn" id="runAll">Run all scenarios</button>
+    <button class="btn ghost" id="modeBtn">Switch mode</button>
+    <button class="btn danger" id="resetBtn">Reset all data</button>
+  </div>
+</div>
+{% endblock %}

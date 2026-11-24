@@ -1,0 +1,4 @@
+Flask>=3.0
+scapy>=2.6.1
+psutil>=6.1
+cryptography>=43.0
